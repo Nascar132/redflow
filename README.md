@@ -2,12 +2,12 @@
 I wrote this to try and learn machine learning and AI and also Rust so don't expect a top level project.
 
 ## Current/planned functions and features:
-### Current stage
+### Currently done:
 - [x] Sigmoid function
 - [x] Sigmoid derivative
+- [x] Weights and bias generation
 
 ### Being worked on
-- [ ] Weights and bias generation
 - [ ] Forward propagation
 - [ ] Backward propagation
 
