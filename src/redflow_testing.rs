@@ -26,7 +26,7 @@ fn clear_inputs(invec:&Vec<Vec<Vec<f64>>>) -> Vec<Vec<Vec<f64>>> {
 }
 
 //Forward propagation
-pub fn sigmoid(x:f64) -> f64{
+pub fn test_sigmoid(x:f64) -> f64{
     let mut ans = -x;
     ans = ans.exp();
     ans = 1.0 + ans;
@@ -35,7 +35,7 @@ pub fn sigmoid(x:f64) -> f64{
 }
 
 //Used for back propagation
-pub fn sigmoid_derivative(x:f64) -> f64{
+pub fn test_sigmoid_derivative(x:f64) -> f64{
     let mut ans = 1.0 - x;
     ans = x * ans;
     return ans
@@ -43,7 +43,7 @@ pub fn sigmoid_derivative(x:f64) -> f64{
 
 //Creates the weights
 //For now you HAVE to pass a vec<vec<vec<f64 vector, even if its only got 1 layer, which would look like: let var = vec![vec![1.0,2.0],vec![3.0,4.0]];
-pub fn generate_weights_and_bias(decimal_place:i32,input:&Vec<Vec<Vec<f64>>>) -> (Vec<Vec<Vec<f64>>>,Vec<Vec<Vec<f64>>>) {
+pub fn test_generate_weights_and_bias(decimal_place:i32,input:&Vec<Vec<Vec<f64>>>) -> (Vec<Vec<Vec<f64>>>,Vec<Vec<Vec<f64>>>) {
     let mut rng = rand::thread_rng();
     let mut weights = clear_inputs(input);
     let mut bias = clear_inputs(&input);
@@ -88,7 +88,7 @@ pub fn generate_weights_and_bias(decimal_place:i32,input:&Vec<Vec<Vec<f64>>>) ->
     return (weights, bias)
 }
 
-pub fn forward_propagate(decimal_place:i32,inputs:&Vec<Vec<Vec<f64>>>,hidden_wb:&Vec<Vec<Vec<Vec<f64>>>>,outputs:&Vec<Vec<Vec<f64>>>,output_wb:&Vec<Vec<Vec<Vec<f64>>>>) -> (Vec<Vec<Vec<f64>>>,Vec<Vec<Vec<f64>>>) {
+pub fn test_forward_propagate(decimal_place:i32,inputs:&Vec<Vec<Vec<f64>>>,hidden_wb:&Vec<Vec<Vec<Vec<f64>>>>,outputs:&Vec<Vec<Vec<f64>>>,output_wb:&Vec<Vec<Vec<Vec<f64>>>>) -> (Vec<Vec<Vec<f64>>>,Vec<Vec<Vec<f64>>>) {
     //env::set_var("RUST_BACKTRACE", "1");
     let mut hidden = clear_inputs(&inputs);
     let mut output = clear_inputs(&outputs);
@@ -135,11 +135,11 @@ pub fn forward_propagate(decimal_place:i32,inputs:&Vec<Vec<Vec<f64>>>,hidden_wb:
     return (hidden,output)
 }
 
-pub fn backward_propagate(decimal_place:i32,hidden_results:&Vec<Vec<Vec<f64>>>,hidden_wb:&Vec<Vec<Vec<Vec<f64>>>>,output_wb:&Vec<Vec<Vec<Vec<f64>>>>,forward_outputs:&Vec<Vec<Vec<f64>>>,original_outputs:&Vec<Vec<Vec<f64>>>){
+pub fn test_backward_propagate(decimal_place:i32,hidden_results:&Vec<Vec<Vec<f64>>>,hidden_wb:&Vec<Vec<Vec<Vec<f64>>>>,output_wb:&Vec<Vec<Vec<Vec<f64>>>>,forward_outputs:&Vec<Vec<Vec<f64>>>,original_outputs:&Vec<Vec<Vec<f64>>>){
     //Model variabbles
     let mut hidden_gradients = clear_inputs(&hidden_results);
     let mut hidden_delta = hidden_gradients.clone();
-    let mut output_gradients = clear_inputs(&forward_outputs);
+    let mut output_gradient:f64;
     let mut output_delta = output_gradients.clone();
     //Error variables
     let mut errors = output_gradients.clone();
@@ -163,12 +163,14 @@ pub fn backward_propagate(decimal_place:i32,hidden_results:&Vec<Vec<Vec<f64>>>,h
                 error = round(error,decimal_place);
                 errors[layer][row][val] = error;
                 //Calculates the output layer gradient
-                output_ans = sigmoid_derivative(forward_outputs[layer][row][val]);
+                output_ans += sigmoid_derivative(forward_outputs[layer][row][val]);
                 output_ans = round(output_ans,decimal_place);
-                output_gradients[layer][row][val] = output_ans;
+                output_gradient = output_ans;
                 //Finds the delta for the output layer
-                output_ans = errors[layer][row][val] * output_gradients[layer][row][val];
+                output_ans = errors[layer][row][val] * output_gradient;
                 output_delta[layer][row][val] = round(output_ans,decimal_place);
+                //Hidden layer error
+                hidden_ans = output_delta[layer][row][val] * output_wb[0][layer][row][val];
                 val += 1;
             }
         row += 1;
@@ -180,7 +182,7 @@ pub fn backward_propagate(decimal_place:i32,hidden_results:&Vec<Vec<Vec<f64>>>,h
     //println!("Layer, row, val: {} {} {}",layer,row,val); use to see if the resets can be removed between each iteration block
     layer = 0;
     println!("Errors: {:?}",errors);
-    println!("Output gradients: {:?}",output_gradients);
+    println!("Output gradient: {:?}",output_gradient);
     println!("Output deltas: {:?}",output_delta);
     for _x in hidden_results.iter(){
         for _y in hidden_results[0].iter(){

@@ -2,14 +2,18 @@
 I wrote this to try and learn machine learning and AI and also Rust so don't expect a top level project.
 
 ## Current/planned functions and features:
+### Extras:
+- You can choose to what decimal point a function will round to. A higher number will obviously give a more precise value but a bigger file size if you store it.
 ### Currently done:
 - [x] Sigmoid function
 - [x] Sigmoid derivative
 - [x] Weights and bias generation
+- [x] Forward propagation
 
 ### Being worked on
-- [ ] Forward propagation
 - [ ] Backward propagation
+- ### Optional
+- [ ] Go back and test if the reset code can be removed between iteration statements
 
 ### Planned for next stage
 - [ ] A CSV parser
